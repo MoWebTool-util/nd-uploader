@@ -47,10 +47,10 @@ var removeFile = function(file) { // 删除选定的图片
 function getUploader(options, outUpload) {
 
   var uploader = new Webuploader.create($.extend({
-    swf: './static/mod/upload/webuploader/dist/Uploader.swf',
+    swf: options.swf,
+    server: options.server || '',
     chunked: false, // 禁止分段上传
     disableGlobalDnd: true, // 禁掉全局的拖拽功能
-    server: options.server || '',
     pick: options.pick || '#filePicker',
     thumb: options.thumb,
     resize: options.resize,
@@ -181,6 +181,7 @@ Uploader = Widget.extend({
   attrs: {
     // 模板
     className: 'upload',
+    swf: '',
     server: '',
     previewImg: false,
     previewFile: false,
@@ -227,6 +228,7 @@ Uploader = Widget.extend({
 
 
     self.uploader = getUploader({
+      swf: self.get('swf'),
       server: self.get('server'),
       pick: '#' + self.filePicker.element.attr('id'),
       thumb: self.get('thumb'),
