@@ -16,7 +16,7 @@ $ spm install nd-uploader --save
 var Uploader = require('nd-uploader');
 
 使用时，需手动配置vendor下的Uploader.swf
-Uploader.create({
+new Uploader({
 	swf: ''//swf地址
 })
 // use nd-uploader

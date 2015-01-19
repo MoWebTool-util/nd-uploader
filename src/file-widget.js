@@ -21,8 +21,8 @@ module.exports = Widget.extend({
   },
 
   del: function() {
-    var imgIndex = this.get('model').index;
-    this.trigger('deleteFile', imgIndex);
+    var fileIndex = this.get('model').index;
+    this.trigger('deleteFile', fileIndex);
   },
 
   show: function() {
