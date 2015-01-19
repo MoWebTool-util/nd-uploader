@@ -11,7 +11,15 @@ module.exports = Widget.extend({
 
   attrs: {
     // 模板
-    template: template
+    template: template,
+    insertInto: function(element, parentNode) {
+      var picker = parentNode.find('.image-picker');
+      if (picker.length) {
+        picker.before(element);
+      } else {
+        element.appendTo(parentNode);
+      }
+    }
   },
 
   events: {

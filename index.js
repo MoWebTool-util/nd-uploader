@@ -187,6 +187,7 @@ Uploader = Widget.extend({
     server: '',
     previewImg: false,
     previewFile: false,
+    pickerInList: false,
     thumb: {
       width: 120,
       height: 120
@@ -227,6 +228,10 @@ Uploader = Widget.extend({
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
     });
+
+    if (self.get('pickerInList')) {
+      parentNode = self.fileList.element;
+    }
 
     self.filePicker = new FilePicker({
       model: {

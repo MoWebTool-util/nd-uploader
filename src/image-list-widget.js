@@ -17,6 +17,7 @@ module.exports = Widget.extend({
   },
 
   add: function(img) {
+
     var self = this,
       imageWidget = new ImageWidget({
         model: img,
