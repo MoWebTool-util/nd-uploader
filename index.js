@@ -11,9 +11,10 @@ var $ = require('jquery'),
   Template = require('nd-template'),
   Webuploader = require('./vendor/webuploader'),
   ImageList = require('./src/image-list-widget'),
-  ImagePicker = require('./src/image-picker'),
   FileList = require('./src/file-list-widget'),
   FilePicker = require('./src/file-picker');
+
+var fileUploaderIndex = 0;
 
 var Uploader;
 
@@ -196,22 +197,20 @@ Uploader = Widget.extend({
 
   setup: function() {
 
-    var Picker, List, parentNode, pickBtn, self = this;
+    var List, parentNode, self = this;
+
+    fileUploaderIndex ++;
     this.uploadedProgress = [],
     this.uploadingFileSize = 0,
     this.uploadedFileSize = 0;
 
     if (this.get('accept') && this.get('accept').title === 'Images') {
-      self.set('className', self.get('className') + ' image-upload');
-      parentNode = '.image-upload';
-      pickBtn = '#imagePicker';
-      Picker = ImagePicker;
+      self.set('id', 'image-upload' + fileUploaderIndex);
+      parentNode = '#image-upload' + fileUploaderIndex;
       List = ImageList;
     } else {
-      self.set('className', self.get('className') + ' file-upload');
-      parentNode = '.file-upload';
-      pickBtn = '#filePicker',
-        Picker = FilePicker;
+      self.set('id', 'file-upload' + fileUploaderIndex);
+      parentNode = '#file-upload'  + fileUploaderIndex;
       List = FileList;
     }
     self.render();
@@ -221,10 +220,13 @@ Uploader = Widget.extend({
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
     });
-    self.filePicker = new Picker({
+
+    self.filePicker = new FilePicker({
+      model: {
+        idName: 'file-picker' + fileUploaderIndex
+      },
       parentNode: parentNode
     }).render();
-
 
     self.uploader = getUploader({
       swf: self.get('swf'),
