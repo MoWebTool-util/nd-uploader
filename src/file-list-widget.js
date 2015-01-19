@@ -21,7 +21,7 @@ module.exports = Widget.extend({
     var self = this,
       fileWidget = new FileWidget({
         model: file,
-        parentNode: '.file-list'
+        parentNode: self.element
       }).render();
 
     fileWidget.on('deleteFile', function(fileIndex) {

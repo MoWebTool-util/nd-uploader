@@ -20,7 +20,7 @@ module.exports = Widget.extend({
     var self = this,
       imageWidget = new ImageWidget({
         model: img,
-        parentNode: '.image-list'
+        parentNode: self.element
       }).render();
 
     imageWidget.on('deleteImg', function(imgIndex) {
