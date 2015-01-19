@@ -15,10 +15,6 @@ var $ = require('jquery'),
   FileList = require('./src/file-list-widget'),
   FilePicker = require('./src/file-picker');
 
-var uploadedProgress = [],
-  uploadingFileSize = 0,
-  uploadedFileSize = 0;
-
 var Uploader;
 
 var removeFile = function(file) { // 删除选定的图片
@@ -68,7 +64,7 @@ function getUploader(options, outUpload) {
     var fileLength = this.getFiles('inited').length; //队列中的文件数量
     outUpload.trigger('initFileNumChange', fileLength);
 
-    uploadingFileSize += file.size;
+    outUpload.uploadingFileSize += file.size;
 
     if (outUpload.get('previewImg')) {
       var $imgTpl = outUpload.fileList.add({
@@ -101,7 +97,7 @@ function getUploader(options, outUpload) {
     var fileLength = this.getFiles('inited').length; //队列中的文件数量
     outUpload.trigger('initFileNumChange', fileLength);
 
-    uploadingFileSize -= file.size;
+    outUpload.uploadingFileSize -= file.size;
     removeFile(file);
 
   });
@@ -110,16 +106,16 @@ function getUploader(options, outUpload) {
   uploader.on('uploadProgress', function(file, percentage) {
 
     var per = 0;
-    uploadedProgress[file.id] = file.size * percentage;
-    uploadedFileSize = 0;
+    outUpload.uploadedProgress[file.id] = file.size * percentage;
+    outUpload.uploadedFileSize = 0;
 
-    $.each(uploadedProgress, function(k, size) {
-      uploadedFileSize += size;
+    $.each(outUpload.uploadedProgress, function(k, size) {
+      outUpload.uploadedFileSize += size;
     });
 
-    per = uploadedFileSize / uploadingFileSize;
+    per = outUpload.uploadedFileSize / outUpload.uploadingFileSize;
 
-    outUpload.trigger('progress', per, uploadingFileSize);
+    outUpload.trigger('progress', per, outUpload.uploadingFileSize);
 
   });
 
@@ -201,6 +197,9 @@ Uploader = Widget.extend({
   setup: function() {
 
     var Picker, List, parentNode, pickBtn, self = this;
+    this.uploadedProgress = [],
+    this.uploadingFileSize = 0,
+    this.uploadedFileSize = 0;
 
     if (this.get('accept') && this.get('accept').title === 'Images') {
       self.set('className', self.get('className') + ' image-upload');
