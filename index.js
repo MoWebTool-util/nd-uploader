@@ -202,7 +202,7 @@ Uploader = Widget.extend({
 
   setup: function() {
 
-    var List, parentNode, self = this;
+    var List, parentNode, pickerClassName, self = this;
 
     fileUploaderIndex ++;
     this.uploadedProgress = [],
@@ -212,10 +212,12 @@ Uploader = Widget.extend({
     if (this.get('accept') && this.get('accept').title === 'Images') {
       self.set('id', 'image-upload' + fileUploaderIndex);
       parentNode = '#image-upload' + fileUploaderIndex;
+      pickerClassName = 'image-picker';
       List = ImageList;
     } else {
       self.set('id', 'file-upload' + fileUploaderIndex);
       parentNode = '#file-upload'  + fileUploaderIndex;
+      pickerClassName = 'file-picker';
       List = FileList;
     }
     self.render();
@@ -228,6 +230,7 @@ Uploader = Widget.extend({
 
     self.filePicker = new FilePicker({
       model: {
+        className: pickerClassName,
         idName: 'file-picker' + fileUploaderIndex
       },
       parentNode: parentNode

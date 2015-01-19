@@ -15,22 +15,12 @@ module.exports = Widget.extend({
   },
 
   events: {
-    'click [data-role=delete-pic]': 'del',
-    'mouseover': 'show',
-    'mouseout': 'hide'
+    'click [data-role=delete-pic]': 'del'
   },
 
   del: function() {
     var imgIndex = this.get('model').index;
     this.trigger('deleteImg', imgIndex);
-  },
-
-  show: function() {
-    this.element.find('.handle').height(20);
-  },
-
-  hide: function() {
-    this.element.find('.handle').height(0);
   }
 
 

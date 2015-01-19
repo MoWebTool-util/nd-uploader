@@ -15,22 +15,12 @@ module.exports = Widget.extend({
   },
 
   events: {
-    'click [data-role=delete-file]': 'del',
-    'mouseover': 'show',
-    'mouseout': 'hide'
+    'click [data-role=delete-file]': 'del'
   },
 
   del: function() {
     var fileIndex = this.get('model').index;
     this.trigger('deleteFile', fileIndex);
-  },
-
-  show: function() {
-    this.element.find('.handle').height(20);
-  },
-
-  hide: function() {
-    this.element.find('.handle').height(0);
   }
 
 
