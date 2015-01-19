@@ -158,6 +158,11 @@ function getUploader(options, outUpload) {
 
   uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
+
+    outUpload.uploadedProgress = [],
+    outUpload.uploadingFileSize = 0,
+    outUpload.uploadedFileSize = 0;
+
     var fileList = uploader.getFiles();
     $.each(fileList, function(k, file) {
       removeFile(file);
@@ -293,6 +298,11 @@ Uploader = Widget.extend({
     $.each(fileList, function(k, file) {
       removeFile(file);
     });
+
+    this.uploadedProgress = [],
+    this.uploadingFileSize = 0,
+    this.uploadedFileSize = 0;
+
     this.uploader.reset();
 
   }
