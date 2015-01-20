@@ -27,7 +27,9 @@ var removeFile = function(file) { // 删除选定的图片
  * 上传流程触发事件：
  *     progress(per, filesSize): 进度  per总进度，单位：小数;filesSize:文件总大小
  *     finished(): 队列中没有待上传的文件，此次上传完成
+ *     uploadSuccess(file, response): 成功上传一个文件 response服务端信息
  *     uploadError(file, response): 失败上传一个文件 response服务端信息
+ *     uploadComplete(file): 上传一个文件完成（成功或失败）
  *     initFileNumChange(num): 待上传文件数量变化
  *
  * 错误信息事件：
@@ -121,8 +123,8 @@ function getUploader(options, outUpload) {
   });
 
 
-  uploader.on('uploadSuccess', function( /*file, response*/ ) {
-
+  uploader.on('uploadSuccess', function(file, response) {
+    outUpload.trigger('uploadSuccess', file, response);
   });
 
 
@@ -131,8 +133,8 @@ function getUploader(options, outUpload) {
   });
 
 
-  uploader.on('uploadComplete', function( /*file*/ ) {
-    //outUpload.trigger('complete', file);
+  uploader.on('uploadComplete', function(file) {
+    outUpload.trigger('uploadComplete', file);
   });
 
   //错误信息
