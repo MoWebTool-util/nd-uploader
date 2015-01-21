@@ -205,14 +205,23 @@ Uploader = Widget.extend({
 
   setup: function() {
 
-    var List, parentNode, pickerClassName, self = this;
+    var List, title, parentNode, pickerClassName, self = this, isImg = false,
+      imageTitle = ['img','Img','image','Image','images','Images'];
+
+    title = this.get('accept') ? this.get('accept').title : '';
+    $.each(imageTitle, function(k, v) {
+      if (title === v) {
+        isImg = true;
+        return;
+      }
+    });
 
     fileUploaderIndex ++;
     this.uploadedProgress = [],
     this.uploadingFileSize = 0,
     this.uploadedFileSize = 0;
 
-    if (this.get('accept') && this.get('accept').title === 'Images') {
+    if (isImg) {
       self.set('id', 'image-upload' + fileUploaderIndex);
       parentNode = '#image-upload' + fileUploaderIndex;
       pickerClassName = 'image-picker';
