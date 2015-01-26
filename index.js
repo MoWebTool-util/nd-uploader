@@ -162,8 +162,8 @@ function getUploader(options, outUpload) {
     outUpload.trigger('finished');
 
     outUpload.uploadedProgress = [],
-    outUpload.uploadingFileSize = 0,
-    outUpload.uploadedFileSize = 0;
+      outUpload.uploadingFileSize = 0,
+      outUpload.uploadedFileSize = 0;
 
     var fileList = uploader.getFiles();
     $.each(fileList, function(k, file) {
@@ -205,8 +205,9 @@ Uploader = Widget.extend({
 
   setup: function() {
 
-    var List, title, parentNode, pickerClassName, self = this, isImg = false,
-      imageTitle = ['img','Img','image','Image','images','Images'];
+    var List, title, parentNode, pickerClassName, self = this,
+      isImg = false,
+      imageTitle = ['img', 'Img', 'image', 'Image', 'images', 'Images'];
 
     title = this.get('accept') ? this.get('accept').title : '';
     $.each(imageTitle, function(k, v) {
@@ -216,10 +217,10 @@ Uploader = Widget.extend({
       }
     });
 
-    fileUploaderIndex ++;
+    fileUploaderIndex++;
     this.uploadedProgress = [],
-    this.uploadingFileSize = 0,
-    this.uploadedFileSize = 0;
+      this.uploadingFileSize = 0,
+      this.uploadedFileSize = 0;
 
     if (isImg) {
       self.set('id', 'image-upload' + fileUploaderIndex);
@@ -228,7 +229,7 @@ Uploader = Widget.extend({
       List = ImageList;
     } else {
       self.set('id', 'file-upload' + fileUploaderIndex);
-      parentNode = '#file-upload'  + fileUploaderIndex;
+      parentNode = '#file-upload' + fileUploaderIndex;
       pickerClassName = 'file-picker';
       List = FileList;
     }
@@ -266,6 +267,27 @@ Uploader = Widget.extend({
       fileNumLimit: self.get('fileNumLimit')
     }, self);
 
+  },
+
+  /**
+   * 创建缩略图
+   */
+  makeThumb: function(width, height) {
+    var self = this,
+      uploader = this.uploader,
+      fileList = uploader.getFiles('inited'),
+      files = fileList.length,
+      imgList = [],
+      count = 0;
+    $.each(fileList, function(k, file) {
+      uploader.makeThumb(file, function(error, src) {
+        imgList.push(src);
+        count++;
+        if (count === files) {
+          self.trigger('thumbMade', imgList);
+        }
+      }, width, height);
+    });
   },
 
   /**
@@ -319,8 +341,8 @@ Uploader = Widget.extend({
     });
 
     this.uploadedProgress = [],
-    this.uploadingFileSize = 0,
-    this.uploadedFileSize = 0;
+      this.uploadingFileSize = 0,
+      this.uploadedFileSize = 0;
 
     this.uploader.reset();
 
