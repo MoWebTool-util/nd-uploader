@@ -161,15 +161,10 @@ function getUploader(options, outUpload) {
   uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
 
-    outUpload.uploadedProgress = [],
-      outUpload.uploadingFileSize = 0,
-      outUpload.uploadedFileSize = 0;
+    outUpload.uploadedProgress = [];
+    outUpload.uploadingFileSize = 0;
+    outUpload.uploadedFileSize = 0;
 
-    var fileList = uploader.getFiles();
-    $.each(fileList, function(k, file) {
-      removeFile(file);
-    });
-    this.reset();
   });
 
   return uploader;
@@ -300,8 +295,13 @@ Uploader = Widget.extend({
   /**
    * 重传
    */
-  retry: function() {
-    this.uploader.retry();
+  retry: function(file) {
+    if (!!file) {
+      this.uploader.retry(file);
+    } else {
+      this.uploader.retry();
+    }
+
   },
 
   /**
@@ -340,9 +340,9 @@ Uploader = Widget.extend({
       removeFile(file);
     });
 
-    this.uploadedProgress = [],
-      this.uploadingFileSize = 0,
-      this.uploadedFileSize = 0;
+    this.uploadedProgress = [];
+    this.uploadingFileSize = 0;
+    this.uploadedFileSize = 0;
 
     this.uploader.reset();
 
