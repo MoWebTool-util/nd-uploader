@@ -42,7 +42,6 @@ var removeFile = function(file) { // 删除选定的图片
  * @param params
  * @return {*}
  **/
-
 function getUploader(options, outUpload) {
 
   var uploader = new Webuploader.create($.extend({
@@ -107,18 +106,21 @@ function getUploader(options, outUpload) {
 
 
   uploader.on('uploadProgress', function(file, percentage) {
+    if (outUpload.flag) {
+      outUpload.flag = false;
+      var per = 0;
+      outUpload.uploadedProgress[file.id] = file.size * percentage;
+      outUpload.uploadedFileSize = 0;
 
-    var per = 0;
-    outUpload.uploadedProgress[file.id] = file.size * percentage;
-    outUpload.uploadedFileSize = 0;
+      $.each(outUpload.uploadedProgress, function(k, size) {
+        outUpload.uploadedFileSize += size;
+      });
 
-    $.each(outUpload.uploadedProgress, function(k, size) {
-      outUpload.uploadedFileSize += size;
-    });
+      per = outUpload.uploadedFileSize / outUpload.uploadingFileSize;
+      outUpload.trigger('progress', per, outUpload.uploadingFileSize);
+      outUpload.flag = true;
+    }
 
-    per = outUpload.uploadedFileSize / outUpload.uploadingFileSize;
-
-    outUpload.trigger('progress', per, outUpload.uploadingFileSize);
 
   });
 
@@ -161,7 +163,7 @@ function getUploader(options, outUpload) {
   uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
 
-    outUpload.uploadedProgress = [];
+    outUpload.uploadedProgress = {};
     outUpload.uploadingFileSize = 0;
     outUpload.uploadedFileSize = 0;
 
@@ -213,9 +215,10 @@ Uploader = Widget.extend({
     });
 
     fileUploaderIndex++;
-    this.uploadedProgress = [],
-      this.uploadingFileSize = 0,
-      this.uploadedFileSize = 0;
+    this.uploadedProgress = {};
+    this.flag = true;
+    this.uploadingFileSize = 0;
+    this.uploadedFileSize = 0;
 
     if (isImg) {
       self.set('id', 'image-upload' + fileUploaderIndex);
@@ -340,7 +343,7 @@ Uploader = Widget.extend({
       removeFile(file);
     });
 
-    this.uploadedProgress = [];
+    this.uploadedProgress = {};
     this.uploadingFileSize = 0;
     this.uploadedFileSize = 0;
 
