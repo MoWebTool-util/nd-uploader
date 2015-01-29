@@ -12,7 +12,7 @@ module.exports = Widget.extend({
 
   attrs: {
     // 模板
-    className: 'image-list',
+    classPrefix: 'image-list',
     template: template
   },
 
@@ -20,13 +20,16 @@ module.exports = Widget.extend({
 
     var self = this,
       imageWidget = new ImageWidget({
+        // classPrefix: self.get('classPrefix') + '-image',
         model: img,
+        picker: self.get('picker'),
         parentNode: self.element
       }).render();
 
     imageWidget.on('deleteImg', function(imgIndex) {
       self.delImg(imgIndex);
     });
+
     return imageWidget.element;
   },
 

@@ -1,8 +1,7 @@
 'use strict';
 
 var Widget = require('nd-widget'),
-  Template = require('nd-template'),
-  template = require('./file-picker.handlebars');
+  Template = require('nd-template');
 
 module.exports = Widget.extend({
 
@@ -10,8 +9,12 @@ module.exports = Widget.extend({
   Implements: Template,
 
   attrs: {
+    classPrefix: 'file-picker',
     // 模板
-    template: template
+    template: require('./file-picker.handlebars'),
+    model: {
+      placeholder: '选择文件'
+    }
   }
 
 });

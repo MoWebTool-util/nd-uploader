@@ -1,19 +1,22 @@
 'use strict';
 
 var Widget = require('nd-widget'),
-  Template = require('nd-template'),
-  template = require('./image.handlebars');
+  Template = require('nd-template');
+var filePicker;
 
-module.exports = Widget.extend({
+var image = module.exports = Widget.extend({
 
   // 使用 handlebars
   Implements: Template,
 
   attrs: {
+    classPrefix: 'image',
     // 模板
-    template: template,
+    template: require('./image.handlebars'),
+    picker: '',
+
     insertInto: function(element, parentNode) {
-      var picker = parentNode.find('.image-picker');
+      var picker = parentNode.find(filePicker);
       if (picker.length) {
         picker.before(element);
       } else {
@@ -22,14 +25,18 @@ module.exports = Widget.extend({
     }
   },
 
+  setup: function() {
+    filePicker = this.get('picker');
+    image.superclass.setup.call(this);
+
+  },
+
   events: {
     'click [data-role=delete-pic]': 'del'
   },
 
   del: function() {
-    var imgIndex = this.get('model').index;
-    this.trigger('deleteImg', imgIndex);
+    this.trigger('deleteImg', this.get('model').index);
   }
-
 
 });
