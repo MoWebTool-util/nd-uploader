@@ -10,6 +10,7 @@ module.exports = Widget.extend({
   Implements: Template,
 
   attrs: {
+    classPrefix: 'file',
     // 模板
     template: template
   },

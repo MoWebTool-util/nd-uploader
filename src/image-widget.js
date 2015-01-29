@@ -1,8 +1,7 @@
 'use strict';
 
 var Widget = require('nd-widget'),
-  Template = require('nd-template'),
-  template = require('./image.handlebars');
+  Template = require('nd-template');
 
 module.exports = Widget.extend({
 
@@ -10,10 +9,12 @@ module.exports = Widget.extend({
   Implements: Template,
 
   attrs: {
+    classPrefix: 'image',
     // 模板
-    template: template,
+    template: require('./image.handlebars'),
     insertInto: function(element, parentNode) {
       var picker = parentNode.find('.image-picker');
+
       if (picker.length) {
         picker.before(element);
       } else {
@@ -27,9 +28,7 @@ module.exports = Widget.extend({
   },
 
   del: function() {
-    var imgIndex = this.get('model').index;
-    this.trigger('deleteImg', imgIndex);
+    this.trigger('deleteImg', this.get('model').index);
   }
-
 
 });

@@ -2,9 +2,7 @@
 
 var Widget = require('nd-widget'),
   Template = require('nd-template'),
-  FileWidget = require('./file-widget'),
-  template = require('./file-list.handlebars');
-
+  FileWidget = require('./file-widget');
 
 module.exports = Widget.extend({
 
@@ -13,13 +11,14 @@ module.exports = Widget.extend({
 
   attrs: {
     // 模板
-    className: 'file-list',
-    template: template
+    classPrefix: 'file-list',
+    template: require('./file-list.handlebars')
   },
 
   add: function(file) {
     var self = this,
       fileWidget = new FileWidget({
+        // classPrefix: self.get('classPrefix') + '-file',
         model: file,
         parentNode: self.element
       }).render();

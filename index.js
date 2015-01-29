@@ -8,7 +8,7 @@
 
 var $ = require('jquery'),
   Widget = require('nd-widget'),
-  Template = require('nd-template'),
+  // Template = require('nd-template'),
   Webuploader = require('./vendor/webuploader'),
   ImageList = require('./src/image-list-widget'),
   FileList = require('./src/file-list-widget'),
@@ -60,7 +60,6 @@ function getUploader(options, outUpload) {
     fileNumLimit: options.fileNumLimit // 文件数量
   }, options));
 
-
   uploader.on('fileQueued', function(file) {
 
     var fileLength = this.getFiles('inited').length; //队列中的文件数量
@@ -89,21 +88,15 @@ function getUploader(options, outUpload) {
         fileName: file.name
       });
     }
-
-
   });
 
-
   uploader.on('fileDequeued', function(file) {
-
     var fileLength = this.getFiles('inited').length; //队列中的文件数量
     outUpload.trigger('initFileNumChange', fileLength);
 
     outUpload.uploadingFileSize -= file.size;
     removeFile(file);
-
   });
-
 
   uploader.on('uploadProgress', function(file, percentage) {
     if (outUpload.flag) {
@@ -120,20 +113,15 @@ function getUploader(options, outUpload) {
       outUpload.trigger('progress', per, outUpload.uploadingFileSize);
       outUpload.flag = true;
     }
-
-
   });
-
 
   uploader.on('uploadSuccess', function(file, response) {
     outUpload.trigger('uploadSuccess', file, response);
   });
 
-
   uploader.on('uploadError', function(file, response) {
     outUpload.trigger('uploadError', file, response);
   });
-
 
   uploader.on('uploadComplete', function(file) {
     outUpload.trigger('uploadComplete', file);
@@ -159,7 +147,6 @@ function getUploader(options, outUpload) {
     }
   });
 
-
   uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
 
@@ -172,16 +159,14 @@ function getUploader(options, outUpload) {
   return uploader;
 }
 
-
-
 Uploader = Widget.extend({
 
   // 使用 handlebars
-  Implements: Template,
+  // Implements: Template,
 
   attrs: {
     // 模板
-    className: 'upload',
+    classPrefix: 'ui-uploader',
     swf: '',
     server: '',
     previewImg: false,
@@ -201,18 +186,11 @@ Uploader = Widget.extend({
   },
 
   setup: function() {
-
-    var List, title, parentNode, pickerClassName, self = this,
-      isImg = false,
-      imageTitle = ['img', 'Img', 'image', 'Image', 'images', 'Images'];
-
-    title = this.get('accept') ? this.get('accept').title : '';
-    $.each(imageTitle, function(k, v) {
-      if (title === v) {
-        isImg = true;
-        return;
-      }
-    });
+    var self = this,
+      List, parentNode, pickerClassName, ListClassName,
+      classPrefix = this.get('classPrefix'),
+      title = this.get('accept') ? this.get('accept').title : '',
+      isImg = $.inArray(title, ['img', 'Img', 'image', 'Image', 'images', 'Images']) !== -1;
 
     fileUploaderIndex++;
     this.uploadedProgress = {};
@@ -225,15 +203,22 @@ Uploader = Widget.extend({
       parentNode = '#image-upload' + fileUploaderIndex;
       pickerClassName = 'image-picker';
       List = ImageList;
+      ListClassName = 'image-list';
     } else {
       self.set('id', 'file-upload' + fileUploaderIndex);
       parentNode = '#file-upload' + fileUploaderIndex;
       pickerClassName = 'file-picker';
       List = FileList;
+      ListClassName = 'file-list';
     }
+
+    self.set('className', classPrefix);
+
     self.render();
 
     self.fileList = new List({
+      classPrefix: classPrefix + '-' + ListClassName,
+      id: ListClassName + '-' + fileUploaderIndex,
       parentNode: parentNode
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
@@ -244,10 +229,8 @@ Uploader = Widget.extend({
     }
 
     self.filePicker = new FilePicker({
-      model: {
-        className: pickerClassName,
-        idName: 'file-picker' + fileUploaderIndex
-      },
+      classPrefix: classPrefix + '-' + pickerClassName,
+      id: pickerClassName + '-' + fileUploaderIndex,
       parentNode: parentNode
     }).render();
 
@@ -264,7 +247,6 @@ Uploader = Widget.extend({
       fileSingleSizeLimit: self.get('fileSingleSizeLimit'),
       fileNumLimit: self.get('fileNumLimit')
     }, self);
-
   },
 
   /**
@@ -277,13 +259,16 @@ Uploader = Widget.extend({
       files = fileList.length,
       imgList = [],
       count = 0;
+
     $.each(fileList, function(k, file) {
       uploader.makeThumb(file, function(error, src) {
         imgList.push(src);
         count++;
+
         if (count === files) {
           self.trigger('thumbMade', imgList);
         }
+
       }, width, height);
     });
   },
@@ -335,7 +320,6 @@ Uploader = Widget.extend({
   },
 
   reset: function() {
-
     var uploader = this.uploader,
       fileList = uploader.getFiles();
 
@@ -348,7 +332,6 @@ Uploader = Widget.extend({
     this.uploadedFileSize = 0;
 
     this.uploader.reset();
-
   }
 
 });
