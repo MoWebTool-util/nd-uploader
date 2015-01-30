@@ -174,7 +174,8 @@ Uploader = Widget.extend({
     pickerInList: false,
     thumb: {
       width: 120,
-      height: 120
+      height: 120,
+      quality: 100
     },
     resize: false,
     auto: false,
