@@ -37,6 +37,7 @@ var removeFile = function(file) { // 删除选定的图片
  *     exceedSizeLimit(): 超过总文件大小
  *     exceedSingleSizeLimit(): 单文件超过大小限制
  *     typeDenied(): 文件类型不满足
+ *     dupLicate(): 文件重复选择
  *     error(type): 其他错误 type：错误类型 字符串
  *
  * @param params
@@ -141,6 +142,9 @@ function getUploader(options, outUpload) {
         break;
       case 'Q_TYPE_DENIED': //文件类型不满足
         outUpload.trigger('typeDenied');
+        break;
+      case 'F_DUPLICATE': //文件重复选择
+        outUpload.trigger('dupLicate');
         break;
       default:
         outUpload.trigger('error', type);
@@ -308,8 +312,8 @@ Uploader = Widget.extend({
   /**
    * 暂停上传
    */
-  stop: function() {
-    this.uploader.stop();
+  stop: function(flag) {
+    flag ? this.uploader.stop(flag) : this.uploader.stop();
   },
 
   /**
