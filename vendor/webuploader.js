@@ -5505,7 +5505,7 @@
      * 所以这里没辙，只能借助这个工具
      * @fileOverview jpeg encoder
      */
-    _define('runtime/html5/jpegencoder',[], function( require, exports, module ) {
+    _define('runtime/html5/jpegencoder',[], function() {
 
         /*
           Copyright (c) 2008, Adobe Systems Incorporated
