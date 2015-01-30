@@ -320,7 +320,7 @@ module.exports = Widget.extend({
 
   // 删除选定的图片
   removeFile: function(file) {
-    this.$(['data-index="' + file.id + '"']).off().remove();
+    this.$('[data-index=' + file.id + ']').off().remove();
   }
 
 });
