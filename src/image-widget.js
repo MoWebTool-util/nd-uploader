@@ -2,7 +2,10 @@
 
 var Widget = require('nd-widget'),
   Template = require('nd-template');
+<<<<<<< HEAD
 var filePicker;
+=======
+>>>>>>> eb19aad8de147607465f3771dbeba2eb49f665bf
 
 var image = module.exports = Widget.extend({
 
@@ -13,10 +16,16 @@ var image = module.exports = Widget.extend({
     classPrefix: 'image',
     // 模板
     template: require('./image.handlebars'),
+<<<<<<< HEAD
     picker: '',
 
     insertInto: function(element, parentNode) {
       var picker = parentNode.find(filePicker);
+=======
+    insertInto: function(element, parentNode) {
+      var picker = parentNode.find('.image-picker');
+
+>>>>>>> eb19aad8de147607465f3771dbeba2eb49f665bf
       if (picker.length) {
         picker.before(element);
       } else {
