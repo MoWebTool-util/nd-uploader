@@ -37,7 +37,7 @@ var removeFile = function(file) { // 删除选定的图片
  *     exceedSizeLimit(): 超过总文件大小
  *     exceedSingleSizeLimit(): 单文件超过大小限制
  *     typeDenied(): 文件类型不满足
- *     dupLicate(): 文件重复选择
+ *     duplicate(): 文件重复选择
  *     error(type): 其他错误 type：错误类型 字符串
  *
  * @param params
@@ -144,7 +144,7 @@ function getUploader(options, outUpload) {
         outUpload.trigger('typeDenied');
         break;
       case 'F_DUPLICATE': //文件重复选择
-        outUpload.trigger('dupLicate');
+        outUpload.trigger('duplicate');
         break;
       default:
         outUpload.trigger('error', type);
@@ -178,7 +178,8 @@ Uploader = Widget.extend({
     pickerInList: false,
     thumb: {
       width: 120,
-      height: 120
+      height: 120,
+      quality: 100
     },
     resize: false,
     auto: false,
@@ -223,7 +224,6 @@ Uploader = Widget.extend({
     self.fileList = new List({
       classPrefix: classPrefix + '-' + ListClassName,
       id: ListClassName + '-' + fileUploaderIndex,
-      picker: '#' + pickerClassName + '-' + fileUploaderIndex,
       parentNode: parentNode
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
