@@ -1,8 +1,7 @@
 'use strict';
 
 var Widget = require('nd-widget'),
-  Template = require('nd-template'),
-  template = require('./file.handlebars');
+  Template = require('nd-template');
 
 module.exports = Widget.extend({
 
@@ -12,7 +11,7 @@ module.exports = Widget.extend({
   attrs: {
     classPrefix: 'file',
     // 模板
-    template: template
+    template: require('./file.handlebars')
   },
 
   events: {
@@ -20,8 +19,7 @@ module.exports = Widget.extend({
   },
 
   del: function() {
-    var fileIndex = this.get('model').index;
-    this.trigger('deleteFile', fileIndex);
+    this.trigger('deleteFile', this.get('model').index);
   }
 
 

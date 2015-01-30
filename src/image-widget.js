@@ -2,8 +2,8 @@
 
 var Widget = require('nd-widget'),
   Template = require('nd-template');
-var pickerId;
-var image = module.exports = Widget.extend({
+
+module.exports = Widget.extend({
 
   // 使用 handlebars
   Implements: Template,
@@ -12,21 +12,17 @@ var image = module.exports = Widget.extend({
     classPrefix: 'image',
     // 模板
     template: require('./image.handlebars'),
-    picker: '',
     insertInto: function(element, parentNode) {
-      var picker = parentNode.find(pickerId);
+      var images = parentNode.find('.' + this.get('classPrefix'));
 
-      if (picker.length) {
-        picker.before(element);
+      if (images.length) {
+        images.eq(images.length - 1).after(element);
       } else {
-        element.appendTo(parentNode);
+        element.prependTo(parentNode);
       }
     }
   },
-  setup: function() {
-    image.superclass.setup.call(this);
-    pickerId = this.get('picker');
-  },
+
   events: {
     'click [data-role=delete-pic]': 'del'
   },

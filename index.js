@@ -8,20 +8,11 @@
 
 var $ = require('jquery'),
   Widget = require('nd-widget'),
-  // Template = require('nd-template'),
+  Template = require('nd-template'),
   Webuploader = require('./vendor/webuploader'),
   ImageList = require('./src/image-list-widget'),
   FileList = require('./src/file-list-widget'),
   FilePicker = require('./src/file-picker');
-
-var fileUploaderIndex = 0;
-
-var Uploader;
-
-var removeFile = function(file) { // 删除选定的图片
-  var $li = $('.index-' + file.id);
-  $li.off().find('.file-panel').off().end().remove();
-};
 
 /*
  * 上传流程触发事件：
@@ -37,7 +28,6 @@ var removeFile = function(file) { // 删除选定的图片
  *     exceedSizeLimit(): 超过总文件大小
  *     exceedSingleSizeLimit(): 单文件超过大小限制
  *     typeDenied(): 文件类型不满足
- *     duplicate(): 文件重复选择
  *     error(type): 其他错误 type：错误类型 字符串
  *
  * @param params
@@ -45,20 +35,12 @@ var removeFile = function(file) { // 删除选定的图片
  **/
 function getUploader(options, outUpload) {
 
-  var uploader = new Webuploader.create($.extend({
-    swf: options.swf,
-    server: options.server || '',
+  var uploader = new Webuploader.create($.extend(true, {
+    server: '',
     chunked: false, // 禁止分段上传
     disableGlobalDnd: true, // 禁掉全局的拖拽功能
-    pick: options.pick || '#filePicker',
-    thumb: options.thumb,
-    resize: options.resize,
-    auto: options.auto,
-    formData: options.formData || {},
-    accept: options.accept,
-    fileSizeLimit: options.fileSizeLimit, // 文件总大小上限 200M
-    fileSingleSizeLimit: options.fileSingleSizeLimit, // 单文件大小上限 50M
-    fileNumLimit: options.fileNumLimit // 文件数量
+    pick: '#filePicker',
+    formData: {}
   }, options));
 
   uploader.on('fileQueued', function(file) {
@@ -96,7 +78,7 @@ function getUploader(options, outUpload) {
     outUpload.trigger('initFileNumChange', fileLength);
 
     outUpload.uploadingFileSize -= file.size;
-    removeFile(file);
+    outUpload.removeFile(file);
   });
 
   uploader.on('uploadProgress', function(file, percentage) {
@@ -154,24 +136,22 @@ function getUploader(options, outUpload) {
   uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
 
-    outUpload.uploadedProgress = {};
-    outUpload.uploadingFileSize = 0;
-    outUpload.uploadedFileSize = 0;
-
+    outUpload.initProps();
   });
 
   return uploader;
 }
 
-Uploader = Widget.extend({
+module.exports = Widget.extend({
 
   // 使用 handlebars
-  // Implements: Template,
+  Implements: Template,
 
   attrs: {
     // 模板
     classPrefix: 'ui-uploader',
-    swf: '',
+    template: require('./src/uploader.handlebars'),
+    swf: './vendor/uploader.swf',
     server: '',
     previewImg: false,
     previewFile: false,
@@ -190,69 +170,69 @@ Uploader = Widget.extend({
     fileNumLimit: 9
   },
 
-  setup: function() {
-    var self = this,
-      List, parentNode, pickerClassName, ListClassName,
-      classPrefix = this.get('classPrefix'),
-      title = this.get('accept') ? this.get('accept').title : '',
-      isImg = $.inArray(title, ['img', 'Img', 'image', 'Image', 'images', 'Images']) !== -1;
-
-    fileUploaderIndex++;
+  initProps: function() {
     this.uploadedProgress = {};
-    this.flag = true;
     this.uploadingFileSize = 0;
     this.uploadedFileSize = 0;
+  },
 
-    if (isImg) {
-      self.set('id', 'image-upload' + fileUploaderIndex);
-      parentNode = '#image-upload' + fileUploaderIndex;
-      pickerClassName = 'image-picker';
-      List = ImageList;
-      ListClassName = 'image-list';
-    } else {
-      self.set('id', 'file-upload' + fileUploaderIndex);
-      parentNode = '#file-upload' + fileUploaderIndex;
-      pickerClassName = 'file-picker';
-      List = FileList;
-      ListClassName = 'file-list';
-    }
+  setup: function() {
+    var accept = this.get('accept'),
+      title = accept ? accept.title : '';
 
-    self.set('className', classPrefix);
+    this.isImg = title && $.inArray(title, ['img', 'Img', 'image', 'Image', 'images', 'Images']) !== -1;
 
-    self.render();
+    this.flag = true;
 
-    self.fileList = new List({
-      classPrefix: classPrefix + '-' + ListClassName,
-      id: ListClassName + '-' + fileUploaderIndex,
-      parentNode: parentNode,
-      picker: '#' + pickerClassName + '-' + fileUploaderIndex
+    this.render();
+
+    this.initFileList();
+    this.initFilePicker();
+    this.initUploader();
+  },
+
+  /**
+   * 创建文件队列
+   */
+  initFileList: function() {
+    var self = this,
+      List = (this.isImg ? ImageList : FileList);
+
+    this.fileList = new List({
+      classPrefix: this.get('classPrefix') + '-' + (this.isImg ? 'image' : 'file') + '-list',
+      parentNode: this.element
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
     });
+  },
 
-    if (self.get('pickerInList')) {
-      parentNode = self.fileList.element;
-    }
-
-    self.filePicker = new FilePicker({
-      classPrefix: classPrefix + '-' + pickerClassName,
-      id: pickerClassName + '-' + fileUploaderIndex,
-      parentNode: parentNode
+  /**
+   * 创建文件选择器
+   */
+  initFilePicker: function() {
+    this.filePicker = new FilePicker({
+      classPrefix: this.get('classPrefix') + '-' + (this.isImg ? 'image' : 'file') + '-picker',
+      parentNode: this.get('pickerInList') ? this.fileList.element : this.element
     }).render();
+  },
 
-    self.uploader = getUploader({
-      swf: self.get('swf'),
-      server: self.get('server'),
-      pick: '#' + self.filePicker.element.attr('id'),
-      thumb: self.get('thumb'),
-      resize: self.get('resize'),
-      auto: self.get('auto'),
-      formData: self.get('auto'),
-      accept: self.get('accept'),
-      fileSizeLimit: self.get('fileSizeLimit'),
-      fileSingleSizeLimit: self.get('fileSingleSizeLimit'),
-      fileNumLimit: self.get('fileNumLimit')
-    }, self);
+  /**
+   * 创建 webuploader
+   */
+  initUploader: function() {
+    this.uploader = getUploader({
+      swf: this.get('swf'),
+      server: this.get('server'),
+      pick: this.filePicker.element,
+      thumb: this.get('thumb'),
+      resize: this.get('resize'),
+      auto: this.get('auto'),
+      formData: this.get('formData'),
+      accept: this.get('accept'),
+      fileSizeLimit: this.get('fileSizeLimit'),
+      fileSingleSizeLimit: this.get('fileSingleSizeLimit'),
+      fileNumLimit: this.get('fileNumLimit')
+    }, this);
   },
 
   /**
@@ -295,7 +275,6 @@ Uploader = Widget.extend({
     } else {
       this.uploader.retry();
     }
-
   },
 
   /**
@@ -313,8 +292,8 @@ Uploader = Widget.extend({
   /**
    * 暂停上传
    */
-  stop: function(flag) {
-    flag ? this.uploader.stop(flag) : this.uploader.stop();
+  stop: function() {
+    this.uploader.stop();
   },
 
   /**
@@ -326,20 +305,22 @@ Uploader = Widget.extend({
   },
 
   reset: function() {
-    var uploader = this.uploader,
+    var self = this,
+      uploader = this.uploader,
       fileList = uploader.getFiles();
 
     $.each(fileList, function(k, file) {
-      removeFile(file);
+      self.removeFile(file);
     });
 
-    this.uploadedProgress = {};
-    this.uploadingFileSize = 0;
-    this.uploadedFileSize = 0;
+    this.initProps();
 
     this.uploader.reset();
+  },
+
+  // 删除选定的图片
+  removeFile: function(file) {
+    this.$(['data-index="' + file.id + '"']).off().remove();
   }
 
 });
-
-module.exports = Uploader;
