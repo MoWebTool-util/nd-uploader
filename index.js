@@ -224,7 +224,8 @@ Uploader = Widget.extend({
     self.fileList = new List({
       classPrefix: classPrefix + '-' + ListClassName,
       id: ListClassName + '-' + fileUploaderIndex,
-      parentNode: parentNode
+      parentNode: parentNode,
+      picker: '#' + pickerClassName + '-' + fileUploaderIndex
     }).render().on('del', function(index) {
       self.uploader.removeFile(index, true);
     });
