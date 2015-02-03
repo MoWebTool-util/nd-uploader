@@ -82,17 +82,15 @@ function getUploader(options, outUpload) {
   });
 
   uploader.on('uploadProgress', function(file, percentage) {
+    outUpload.uploadedProgress[file.id] = file.size * percentage;
     if (outUpload.flag) {
       outUpload.flag = false;
-      var per = 0;
-      outUpload.uploadedProgress[file.id] = file.size * percentage;
       outUpload.uploadedFileSize = 0;
-
       $.each(outUpload.uploadedProgress, function(k, size) {
         outUpload.uploadedFileSize += size;
       });
 
-      per = outUpload.uploadedFileSize / outUpload.uploadingFileSize;
+    var  per = outUpload.uploadedFileSize / outUpload.uploadingFileSize;
       outUpload.trigger('progress', per, outUpload.uploadingFileSize);
       outUpload.flag = true;
     }
