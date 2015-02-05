@@ -260,19 +260,15 @@ module.exports = Widget.extend({
   /**
    * 上传
    */
-  upload: function() {
-    this.uploader.upload();
+  upload: function(arg) {
+    this.uploader.upload(arg);
   },
 
   /**
    * 重传
    */
-  retry: function(file) {
-    if (!!file) {
-      this.uploader.retry(file);
-    } else {
-      this.uploader.retry();
-    }
+  retry: function(arg) {
+    this.uploader.retry(arg);
   },
 
   /**
@@ -290,8 +286,8 @@ module.exports = Widget.extend({
   /**
    * 暂停上传
    */
-  stop: function() {
-    this.uploader.stop();
+  stop: function(arg) {
+    this.uploader.stop(arg);
   },
 
   /**
