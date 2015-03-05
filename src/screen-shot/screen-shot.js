@@ -19,13 +19,20 @@ module.exports = Widget.extend({
   },
   events: {
     'click [data-role="screen-shot"]': function () {
-      var url=this.get('url');
-      var auth=this.get('auth');
+      var url = this.get('url');
+      var auth = this.get('auth');
       var para = "RRT";
-      var plugin = document.getElementById("pluginId");
-      plugin.JsCallbackFun=this.get('captureCallback');
-      var callback='captureCallback';
-      plugin.ScreenCapture(url, auth,para,callback);
+      try {
+        //webkit
+        var plugin = document.getElementById("pluginId");
+        plugin.JsCallbackFun = this.get('captureCallback');
+        var callback = 'captureCallback';
+        plugin.ScreenCapture(url, auth, para, callback);
+      } catch (e) {
+        //activex
+        var plugin1 = document.getElementById("plugin");
+        plugin1.CaptureScreen(url, auth, para,window.captureCallback);
+      }
     }
   }
 });
