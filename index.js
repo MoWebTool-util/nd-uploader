@@ -261,7 +261,8 @@ module.exports = Widget.extend({
     multiple: true,
     url:'',//给截图使用的（服务端api接口地址）
     auth:'',//给截图使用的(上传接口需要的一些登录的cookie信息)
-    captureCallback:null//必须是全局函数
+    captureCallback:null,//必须是全局函数
+    installUrl:''//截图插件的地址
   },
 
   initProps: function () {
@@ -323,7 +324,8 @@ module.exports = Widget.extend({
       parentNode: this.get('pickerInList') ? this.fileList.element : this.element,
       url:this.get('url'),
       auth:this.get('auth'),
-      captureCallback:this.get('captureCallback')
+      captureCallback:this.get('captureCallback'),
+      installUrl:this.get('installUrl')
     }).render();
   },
 

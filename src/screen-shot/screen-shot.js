@@ -1,7 +1,10 @@
 'use strict';
 
 var Widget = require('nd-widget'),
-  Template = require('nd-template');
+  Template = require('nd-template'),
+  checkPlugin = require('nd-checkplugin'),
+  confirm = require('nd-confirm');
+
 
 module.exports = Widget.extend({
   Implements: Template,
@@ -15,10 +18,19 @@ module.exports = Widget.extend({
     model: {
       placeholder: '截图上传'
     },
-    captureCallback:function(){}
+    captureCallback: function () {
+    },
+    installUrl: ''
   },
   events: {
     'click [data-role="screen-shot"]': function () {
+      var self = this;
+      if (!checkPlugin('ND99U Plugin')) {
+        confirm.show('现在安装截屏插件?', function () {
+          location.href = self.get('installUrl');
+        });
+        return;
+      }
       var url = this.get('url');
       var auth = this.get('auth');
       var para = "RRT";
@@ -31,7 +43,7 @@ module.exports = Widget.extend({
       } catch (e) {
         //activex
         var plugin1 = document.getElementById("plugin");
-        plugin1.CaptureScreen(url, auth, para,window.captureCallback);
+        plugin1.CaptureScreen(url, auth, para, window.captureCallback);
       }
     }
   }
