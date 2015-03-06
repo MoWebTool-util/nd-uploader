@@ -64,13 +64,13 @@ var $ = require('jquery'),
  * @return {*}
  **/
 
-var renderPic = function (img) {
+var renderPic = function(img) {
   var width = $(img).parent().width();
   var height = $(img).parent().height();
   NDImage.load({
     url: img.src,
 
-    ready: function () {
+    ready: function() {
 
       var self = this;
 
@@ -82,7 +82,7 @@ var renderPic = function (img) {
         maxHeight: height,
         overflow: true,
         stretch: true,
-        callback: function (w, h) {
+        callback: function(w, h) {
           img.width = w;
           img.height = h;
         }
@@ -92,7 +92,7 @@ var renderPic = function (img) {
         node: img,
         width: width,
         height: height,
-        callback: function (t, l) {
+        callback: function(t, l) {
           $(img).css({
             top: t,
             left: l
@@ -119,7 +119,7 @@ function getUploader(options, outUpload) {
     formData: {}
   }, options));
 
-  uploader.on('fileQueued', function (file) {
+  uploader.on('fileQueued', function(file) {
     var completeLength = this.getFiles('complete').length;
     var fileLength = this.getFiles('inited').length + completeLength; //队列中的文件数量
     outUpload.trigger('fileQueued', file);
@@ -144,7 +144,7 @@ function getUploader(options, outUpload) {
         $img.attr('data-id', file.img);
         renderPic($img[0]);
       } else {
-        uploader.makeThumb(file, function (error, src) {
+        uploader.makeThumb(file, function(error, src) {
           if (error) {
             $img.replaceWith('<span>不能预览</span>');
             return;
@@ -161,7 +161,7 @@ function getUploader(options, outUpload) {
     }
   });
 
-  uploader.on('fileDequeued', function (file) {
+  uploader.on('fileDequeued', function(file) {
     var completeLength = this.getFiles('complete').length;
     var fileLength = this.getFiles('inited').length + completeLength; //队列中的文件数量
     outUpload.trigger('initFileNumChange', fileLength, completeLength);
@@ -171,12 +171,12 @@ function getUploader(options, outUpload) {
     outUpload.removeFile(file);
   });
 
-  uploader.on('uploadProgress', function (file, percentage) {
+  uploader.on('uploadProgress', function(file, percentage) {
     outUpload.uploadedProgress[file.id] = file.size * percentage;
     if (outUpload.flag) {
       outUpload.flag = false;
       outUpload.uploadedFileSize = 0;
-      $.each(outUpload.uploadedProgress, function (k, size) {
+      $.each(outUpload.uploadedProgress, function(k, size) {
         outUpload.uploadedFileSize += size;
       });
 
@@ -186,21 +186,21 @@ function getUploader(options, outUpload) {
     }
   });
 
-  uploader.on('uploadSuccess', function (file, response) {
+  uploader.on('uploadSuccess', function(file, response) {
     outUpload.uploadedProgress[file.id] = file.size;
     outUpload.trigger('uploadSuccess', file, response);
   });
 
-  uploader.on('uploadError', function (file, response) {
+  uploader.on('uploadError', function(file, response) {
     outUpload.trigger('uploadError', file, response);
   });
 
-  uploader.on('uploadComplete', function (file) {
+  uploader.on('uploadComplete', function(file) {
     outUpload.trigger('uploadComplete', file);
   });
 
   //错误信息
-  uploader.on('error', function (type) {
+  uploader.on('error', function(type, file) {
     switch (type) {
       case 'Q_EXCEED_NUM_LIMIT': //超过文件数量限制
         outUpload.trigger('exceedNumLimit');
@@ -212,7 +212,7 @@ function getUploader(options, outUpload) {
         outUpload.trigger('exceedSingleSizeLimit');
         break;
       case 'Q_TYPE_DENIED': //文件类型不满足
-        outUpload.trigger('typeDenied');
+        outUpload.trigger(file.size ? 'typeDenied' : 'fileIsEmpty');
         break;
       case 'F_DUPLICATE': //文件重复选择
         outUpload.trigger('duplicate');
@@ -222,7 +222,7 @@ function getUploader(options, outUpload) {
     }
   });
 
-  uploader.on('uploadFinished', function () {
+  uploader.on('uploadFinished', function() {
     outUpload.trigger('finished');
 
     outUpload.initProps();
@@ -265,14 +265,14 @@ module.exports = Widget.extend({
     installUrl:''//截图插件的地址
   },
 
-  initProps: function () {
+  initProps: function() {
     this.uploadedProgress = {};
     this.uploadingFileSize = 0;
     this.uploadedFileSize = 0;
     this._inited = 0;
   },
 
-  setup: function () {
+  setup: function() {
     var accept = this.get('accept'),
       title = accept ? accept.title : '';
 
@@ -293,14 +293,14 @@ module.exports = Widget.extend({
   /**
    * 创建文件队列
    */
-  initFileList: function () {
+  initFileList: function() {
     var self = this,
       List = (this.isImg ? ImageList : FileList);
 
     this.fileList = new List({
       classPrefix: this.get('classPrefix') + '-' + (this.isImg ? 'image' : 'file') + '-list',
       parentNode: this.element
-    }).render().on('del', function (index) {
+    }).render().on('del', function(index) {
         self.uploader.removeFile(index, true);
       });
   },
@@ -308,7 +308,7 @@ module.exports = Widget.extend({
   /**
    * 创建文件选择器
    */
-  initFilePicker: function () {
+  initFilePicker: function() {
     this.filePicker = new FilePicker({
       classPrefix: this.get('classPrefix') + '-' + (this.isImg ? 'image' : 'file') + '-picker',
       parentNode: this.get('pickerInList') ? this.fileList.element : this.element
@@ -318,7 +318,7 @@ module.exports = Widget.extend({
   /**
    * 截图上传
    */
-  initScreenShot: function () {
+  initScreenShot: function() {
     this.screenShot = new ScreenShot({
       classPrefix: this.get('classPrefix') + '-' + 'screen-shot',
       parentNode: this.get('pickerInList') ? this.fileList.element : this.element,
@@ -332,7 +332,7 @@ module.exports = Widget.extend({
   /**
    * 创建 webuploader
    */
-  initUploader: function () {
+  initUploader: function() {
     this.uploader = getUploader({
       swf: this.get('swf'),
       server: this.get('server'),
@@ -356,7 +356,7 @@ module.exports = Widget.extend({
    * @param width 缩略图宽度 没有传参数默认为图片原始宽度
    * @param height 缩略图高度 没有传参数默认为图片原始高度
    */
-  makeThumb: function (width, height) {
+  makeThumb: function(width, height) {
     var self = this,
       uploader = this.uploader,
       fileList = uploader.getFiles('inited'),
@@ -366,10 +366,10 @@ module.exports = Widget.extend({
       thumbWidth = 0,
       thumbHeight = 0;
 
-    $.each(fileList, function (k, file) {
+    $.each(fileList, function(k, file) {
       thumbWidth = width ? width : file['_info'].width;
       thumbHeight = height ? height : file['_info'].height;
-      uploader.makeThumb(file, function (error, src) {
+      uploader.makeThumb(file, function(error, src) {
         imgList.push(src);
         count++;
 
@@ -384,25 +384,25 @@ module.exports = Widget.extend({
   /**
    * 上传
    */
-  upload: function (arg) {
+  upload: function(arg) {
     this.uploader.upload(arg);
   },
 
   /**
    * 重传
    */
-  retry: function (arg) {
+  retry: function(arg) {
     this.uploader.retry(arg);
   },
 
   /**
    * 取消上传
    */
-  cancel: function () {
+  cancel: function() {
     var uploader = this.uploader,
       fileList = uploader.getFiles();
 
-    $.each(fileList, function (k, file) {
+    $.each(fileList, function(k, file) {
       uploader.cancelFile(file);
     });
   },
@@ -410,16 +410,16 @@ module.exports = Widget.extend({
   /**
    * 暂停上传
    */
-  stop: function (arg) {
+  stop: function(arg) {
     this.uploader.stop(arg);
   },
 
 
-  createFile: function (source) {
+  createFile: function(source) {
     return new Webuploader.File(source);
   },
 
-  addFile: function (file) {
+  addFile: function(file) {
     this.uploader.addFile(file);
   },
 
@@ -427,16 +427,16 @@ module.exports = Widget.extend({
    * 获取上传队列文件数量
    * @return fileNum 文件数量
    */
-  getInitFileNum: function () {
+  getInitFileNum: function() {
     return this.uploader.getFiles('inited').length;
   },
 
-  reset: function () {
+  reset: function() {
     var self = this,
       uploader = this.uploader,
       fileList = uploader.getFiles();
 
-    $.each(fileList, function (k, file) {
+    $.each(fileList, function(k, file) {
       self.removeFile(file);
     });
 
@@ -446,7 +446,7 @@ module.exports = Widget.extend({
   },
 
   // 删除选定的图片
-  removeFile: function (file) {
+  removeFile: function(file) {
     this.trigger('deleteFile', file);
     this.$('[data-index=' + file.id + ']').off().remove();
   }
