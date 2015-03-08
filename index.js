@@ -259,6 +259,7 @@ module.exports = Widget.extend({
     fileSingleSizeLimit: 50 * 1024 * 1024,
     fileNumLimit: 9,
     multiple: true,
+    label:'',
     url:'',//给截图使用的（服务端api接口地址）
     auth:'',//给截图使用的(上传接口需要的一些登录的cookie信息)
     captureCallback:null,//必须是全局函数
@@ -338,7 +339,8 @@ module.exports = Widget.extend({
       server: this.get('server'),
       pick: {
         id: this.filePicker.element,
-        multiple: this.get('multiple')
+        multiple: this.get('multiple'),
+        label:this.get('label')
       },
       thumb: this.get('thumb'),
       resize: this.get('resize'),
