@@ -126,11 +126,12 @@ function getUploader(options, outUpload) {
     outUpload.trigger('initFileNumChange', fileLength, completeLength);
 
     outUpload.uploadingFileSize += file.size;
-    outUpload._inited++;
-    if (outUpload._inited > options.fileNumLimit) {
+
+    if (++outUpload._inited > options.fileNumLimit) {
       uploader.removeFile(file);
       return;
     }
+
     if (outUpload.get('previewImg')) {
       var $imgTpl = outUpload.fileList.add({
           index: file.id,
@@ -165,7 +166,10 @@ function getUploader(options, outUpload) {
     var completeLength = this.getFiles('complete').length;
     var fileLength = this.getFiles('inited').length + completeLength; //队列中的文件数量
     outUpload.trigger('initFileNumChange', fileLength, completeLength);
-    outUpload._inited--;
+
+    if (--outUpload._inited < 0) {
+      outUpload._inited = 0;
+    }
 
     outUpload.uploadingFileSize -= file.size;
     outUpload.removeFile(file);
