@@ -8019,86 +8019,86 @@
      *     ...
      * })
      */
-    _define('widgets/log',[
-        'base',
-        'uploader',
-        'widgets/widget'
-    ], function( Base, Uploader ) {
-        var $ = Base.$,
-            logUrl = ' http://static.tieba.baidu.com/tb/pms/img/st.gif??',
-            product = (location.hostname || location.host || 'protected').toLowerCase(),
+    // _define('widgets/log',[
+    //     'base',
+    //     'uploader',
+    //     'widgets/widget'
+    // ], function( Base, Uploader ) {
+    //     var $ = Base.$,
+    //         logUrl = ' http://static.tieba.baidu.com/tb/pms/img/st.gif??',
+    //         product = (location.hostname || location.host || 'protected').toLowerCase(),
 
-            // 只针对 baidu 内部产品用户做统计功能。
-            enable = product && /baidu/i.exec(product),
-            base;
+    //         // 只针对 baidu 内部产品用户做统计功能。
+    //         enable = product && /baidu/i.exec(product),
+    //         base;
 
-        if (!enable) {
-            return;
-        }
+    //     if (!enable) {
+    //         return;
+    //     }
 
-        base = {
-            dv: 3,
-            master: 'webuploader',
-            online: /test/.exec(product) ? 0 : 1,
-            module: '',
-            product: product,
-            type: 0
-        };
+    //     base = {
+    //         dv: 3,
+    //         master: 'webuploader',
+    //         online: /test/.exec(product) ? 0 : 1,
+    //         module: '',
+    //         product: product,
+    //         type: 0
+    //     };
 
-        function send(data) {
-            var obj = $.extend({}, base, data),
-                url = logUrl.replace(/^(.*)\?/, '$1' + $.param( obj )),
-                image = new Image();
+    //     function send(data) {
+    //         var obj = $.extend({}, base, data),
+    //             url = logUrl.replace(/^(.*)\?/, '$1' + $.param( obj )),
+    //             image = new Image();
 
-            image.src = url;
-        }
+    //         image.src = url;
+    //     }
 
-        return Uploader.register({
-            name: 'log',
+    //     return Uploader.register({
+    //         name: 'log',
 
-            init: function() {
-                var owner = this.owner,
-                    count = 0,
-                    size = 0;
+    //         init: function() {
+    //             var owner = this.owner,
+    //                 count = 0,
+    //                 size = 0;
 
-                owner
-                    .on('error', function(code) {
-                        send({
-                            type: 2,
-                            c_error_code: code
-                        });
-                    })
-                    .on('uploadError', function(file, reason) {
-                        send({
-                            type: 2,
-                            c_error_code: 'UPLOAD_ERROR',
-                            c_reason: '' + reason
-                        });
-                    })
-                    .on('uploadComplete', function(file) {
-                        count++;
-                        size += file.size;
-                    }).
-                    on('uploadFinished', function() {
-                        send({
-                            c_count: count,
-                            c_size: size
-                        });
-                        count = size = 0;
-                    });
+    //             owner
+    //                 .on('error', function(code) {
+    //                     send({
+    //                         type: 2,
+    //                         c_error_code: code
+    //                     });
+    //                 })
+    //                 .on('uploadError', function(file, reason) {
+    //                     send({
+    //                         type: 2,
+    //                         c_error_code: 'UPLOAD_ERROR',
+    //                         c_reason: '' + reason
+    //                     });
+    //                 })
+    //                 .on('uploadComplete', function(file) {
+    //                     count++;
+    //                     size += file.size;
+    //                 }).
+    //                 on('uploadFinished', function() {
+    //                     send({
+    //                         c_count: count,
+    //                         c_size: size
+    //                     });
+    //                     count = size = 0;
+    //                 });
 
-                send({
-                    c_usage: 1
-                });
-            }
-        });
-    });
+    //             send({
+    //                 c_usage: 1
+    //             });
+    //         }
+    //     });
+    // });
     /**
      * @fileOverview Uploader上传类
      */
     _define('webuploader',[
-        'preset/all',
-        'widgets/log'
+        'preset/all'/*,
+        'widgets/log'*/
     ], function( preset ) {
         return preset;
     });

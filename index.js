@@ -9,12 +9,14 @@
 var $ = require('jquery'),
   Widget = require('nd-widget'),
   Template = require('nd-template'),
-  NDImage = require('nd-image'),
-  Webuploader = require('./vendor/webuploader'),
-  ImageList = require('./src/image-list-widget'),
+  NDImage = require('nd-image');
+
+var Webuploader = require('./vendor/webuploader');
+
+var ImageList = require('./src/image-list-widget'),
   FileList = require('./src/file-list-widget'),
-  FilePicker = require('./src/file-picker'),
-  ScreenShot = require('./src/screen-shot/screen-shot');
+  FilePicker = require('./src/file-picker')/*,
+  ScreenShot = require('./src/screen-shot/screen-shot')*/;
 
 /*
  * 上传流程触发事件：
@@ -45,7 +47,7 @@ var $ = require('jquery'),
  * @param fileSingleSizeLimit  单文件最大限制，默认50M
  * @param fileNumLimit         文件数量限制，默认9个
  * @param multiple             是否开启文件多选功能
- * @param screenShot            是否开启截图上传功能
+ * @param screenShot           是否开启截图上传功能
  *
  * accept参数示例
  * accept: {title: 'Images', extensions: 'gif,jpg,jpeg,bmp,png', mimeTypes: 'image/*'}
@@ -65,19 +67,20 @@ var $ = require('jquery'),
  **/
 
 var renderPic = function(img) {
-  var width = $(img).parent().width();
-  var height = $(img).parent().height();
+  var imgParent = $(img).parent();
+
+  var width = imgParent.width();
+  var height = imgParent.height();
+
   NDImage.load({
     url: img.src,
 
     ready: function() {
 
-      var self = this;
-
       NDImage.zoom({
         node: img,
-        width: self.width,
-        height: self.height,
+        width: this.width,
+        height: this.height,
         maxWidth: width,
         maxHeight: height,
         overflow: true,
@@ -110,6 +113,7 @@ function getUploader(options, outUpload) {
     alert('您的浏览器不支持该上传功能！请升级浏览器或者下载flash播放器！');
     throw new Error('WebUploader is not supported by the browser you are using.');
   }
+
   var uploader = new Webuploader.Uploader($.extend(true, {
     server: '',
     chunked: false, // 禁止分段上传
@@ -128,7 +132,7 @@ function getUploader(options, outUpload) {
     outUpload.uploadingFileSize += file.size;
 
     if (++outUpload._inited > options.fileNumLimit) {
-      uploader.removeFile(file);
+      uploader.removeFile(file, true);
       return;
     }
 
@@ -249,7 +253,7 @@ module.exports = Widget.extend({
     previewImg: false,
     previewFile: false,
     pickerInList: false,
-    screenShot: false,
+    // screenShot: false,
     thumb: {
       width: 120,
       height: 120,
@@ -289,9 +293,9 @@ module.exports = Widget.extend({
 
     this.initFileList();
     this.initFilePicker();
-    if (this.get('screenShot')) {
-      this.initScreenShot();
-    }
+    // if (this.get('screenShot')) {
+      // this.initScreenShot();
+    // }
     this.initUploader();
   },
 
@@ -323,16 +327,16 @@ module.exports = Widget.extend({
   /**
    * 截图上传
    */
-  initScreenShot: function() {
-    this.screenShot = new ScreenShot({
-      classPrefix: this.get('classPrefix') + '-' + 'screen-shot',
-      parentNode: this.get('pickerInList') ? this.fileList.element : this.element,
-      url:this.get('url'),
-      auth:this.get('auth'),
-      captureCallback:this.get('captureCallback'),
-      installUrl:this.get('installUrl')
-    }).render();
-  },
+  // initScreenShot: function() {
+  //   this.screenShot = new ScreenShot({
+  //     classPrefix: this.get('classPrefix') + '-' + 'screen-shot',
+  //     parentNode: this.get('pickerInList') ? this.fileList.element : this.element,
+  //     url:this.get('url'),
+  //     auth:this.get('auth'),
+  //     captureCallback:this.get('captureCallback'),
+  //     installUrl:this.get('installUrl')
+  //   }).render();
+  // },
 
   /**
    * 创建 webuploader
@@ -443,7 +447,7 @@ module.exports = Widget.extend({
       fileList = uploader.getFiles();
 
     $.each(fileList, function(k, file) {
-      self.removeFile(file);
+      self.removeFile(file, true);
     });
 
     this.initProps();
